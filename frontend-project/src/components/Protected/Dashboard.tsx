@@ -3,6 +3,7 @@ import { NavLink, Routes, Route } from 'react-router-dom';
 import SparePartPage from '../../pages/SparePartPage';
 import StockInPage from '../../pages/StockInPage';
 import StockOutPage from '../../pages/StockOutPage';
+import DailyStockOutReportPage from '../../pages/DailyStockOutReportPage';
 
 const Dashboard: React.FC = () => {
   return (
@@ -41,6 +42,16 @@ const Dashboard: React.FC = () => {
               Stock Out
             </NavLink>
           </li>
+          <li>
+            <NavLink 
+              to="/dashboard/stock-out-report" 
+              className={({ isActive }) => 
+                isActive ? 'font-bold underline' : ''
+              }
+            >
+              Report
+            </NavLink>
+          </li>
         </ul>
       </nav>
 
@@ -50,8 +61,9 @@ const Dashboard: React.FC = () => {
           <Route path="spare-parts" element={<SparePartPage />} />
           <Route path="stock-in" element={<StockInPage />} />
           <Route path="stock-out" element={<StockOutPage />} />
+          <Route path="stock-out-report" element={<DailyStockOutReportPage />} />
           <Route path="*" element={<p>Select a section from the sidebar.</p>} />
-        </Routes>
+        </Routes>   
       </main>
     </div>
   );
