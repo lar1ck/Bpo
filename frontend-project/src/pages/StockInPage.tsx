@@ -51,10 +51,14 @@ const StockInPage: React.FC = () => {
         e.preventDefault();
         try {
             if (editingKeys) {
-                const date = new Date(form.StockInDate).toLocaleDateString('en-CA');
+                const dateObj = new Date(form.StockInDate);
+                dateObj.setDate(dateObj.getDate() + 1);
+                const formattedDate = dateObj.toISOString().split('T')[0];
+                console.log(formattedDate)
+                // const date = form.StockInDate.split("T")[0];
                 await updateStockIn(editingKeys.name, editingKeys.date, {
                     Name: form.Name,
-                    StockInDate: date,
+                    StockInDate: formattedDate,
                     StockInQuantity: form.StockInQuantity,
                 });
             } else {
@@ -68,9 +72,12 @@ const StockInPage: React.FC = () => {
     };
 
     const handleEdit = (stockIn: StockIn) => {
-        const date = new Date(form.StockInDate).toLocaleDateString('en-CA');
+        const dateObj = new Date(stockIn.StockInDate);
+        dateObj.setDate(dateObj.getDate() + 1);
+        const formattedDate = dateObj.toISOString().split('T')[0];
+        console.log(formattedDate)
         setForm(stockIn);
-        setEditingKeys({ name: stockIn.Name, date: date });
+        setEditingKeys({ name: stockIn.Name, date: formattedDate });
         setError(null);
     };
 
@@ -115,7 +122,7 @@ const StockInPage: React.FC = () => {
                     type="date"
                     name="StockInDate"
                     placeholder="Stock In Date"
-                    value={form.StockInDate}
+                    value={form.StockInDate.split("T")[0]}
                     onChange={handleChange}
                     className="w-full p-2 border rounded"
                     required

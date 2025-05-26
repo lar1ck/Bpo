@@ -12,11 +12,13 @@ const baseUrl = '/api/stockout';
 
 export const getStockOuts = () => axios.get<StockOut[]>(baseUrl);
 
-export const getStockOut = (id: number) => axios.get<StockOut>(`${baseUrl}/${id}`);
-
+// Create new stock-out entry
 export const createStockOut = (data: StockOut) => axios.post(baseUrl, data);
 
-export const updateStockOut = (id: number, data: Partial<StockOut>) =>
-  axios.put(`${baseUrl}/${id}`, data);
+// Update using Name and StockOutDate as identifier
+export const updateStockOut = (name: string, date: string, data: Partial<StockOut>) =>
+  axios.put(`${baseUrl}/${encodeURIComponent(name)}/${encodeURIComponent(date)}`, data);
 
-export const deleteStockOut = (id: number) => axios.delete(`${baseUrl}/${id}`);
+// Delete using Name and StockOutDate
+export const deleteStockOut = (name: string, date: string) =>
+  axios.delete(`${baseUrl}/${encodeURIComponent(name)}/${encodeURIComponent(date)}`);

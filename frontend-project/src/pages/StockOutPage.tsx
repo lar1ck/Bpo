@@ -17,7 +17,7 @@ const StockOutPage: React.FC = () => {
     StockOutDate: '',
     Name: '',
   });
-  const [editingId, setEditingId] = useState<number | null>(null);
+  const [editingKeys, setEditingKeys] = useState<{ name: string; date: string } | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const fetchStockOuts = async () => {
@@ -41,7 +41,7 @@ const StockOutPage: React.FC = () => {
       StockOutDate: '',
       Name: '',
     });
-    setEditingId(null);
+    setEditingKeys(null);
     setError(null);
   };
 
@@ -67,8 +67,8 @@ const StockOutPage: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      if (editingId !== null) {
-        await updateStockOut(editingId, form);
+      if (editingKeys) {
+        await updateStockOut(editingKeys.name, editingKeys.date, form);
       } else {
         await createStockOut(form);
       }
@@ -79,16 +79,20 @@ const StockOutPage: React.FC = () => {
     }
   };
 
-  const handleEdit = (stockOut: StockOut, id: number) => {
-    setForm(stockOut);
-    setEditingId(id);
+  const handleEdit = (stockOut: StockOut) => {
+    const dateObj = new Date(stockOut.StockOutDate);
+    dateObj.setDate(dateObj.getDate() + 1); // adjust timezone if needed
+    const formattedDate = dateObj.toISOString().split('T')[0];
+
+    setForm({ ...stockOut, StockOutDate: formattedDate });
+    setEditingKeys({ name: stockOut.Name, date: formattedDate });
     setError(null);
   };
 
-  const handleDelete = async (id: number) => {
+  const handleDelete = async (name: string, date: string) => {
     if (!window.confirm('Delete this stock-out record?')) return;
     try {
-      await deleteStockOut(id);
+      await deleteStockOut(name, new Date(date).toLocaleDateString("en-CA"));
       fetchStockOuts();
     } catch {
       setError('Failed to delete stock-out record.');
@@ -153,9 +157,9 @@ const StockOutPage: React.FC = () => {
           type="submit"
           className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
         >
-          {editingId !== null ? 'Update' : 'Add'}
+          {editingKeys ? 'Update' : 'Add'}
         </button>
-        {editingId !== null && (
+        {editingKeys && (
           <button
             type="button"
             onClick={resetForm}
@@ -188,13 +192,13 @@ const StockOutPage: React.FC = () => {
                 <td className="border border-gray-300 p-2">{so.StockOutDate}</td>
                 <td className="border border-gray-300 p-2 space-x-2">
                   <button
-                    onClick={() => handleEdit(so, idx)}
+                    onClick={() => handleEdit(so)}
                     className="text-blue-600 hover:underline"
                   >
                     Edit
                   </button>
                   <button
-                    onClick={() => handleDelete(idx)}
+                    onClick={() => handleDelete(so.Name, so.StockOutDate)}
                     className="text-red-600 hover:underline"
                   >
                     Delete
